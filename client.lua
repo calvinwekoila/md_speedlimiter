@@ -9,13 +9,19 @@ lib.onCache('vehicle', function(value)
     SetTimeout(0, function()
         if cache.seat ~= -1 then return end
 
-        if GLOBAL_LIMIT then
-            return SetEntityMaxSpeed(value, GLOBAL_LIMIT / 3.6)
-        end
-
         local vehicleLimit = Vehicles[GetEntityModel(value)]
-        if not vehicleLimit then return end
-
-        SetEntityMaxSpeed(value, vehicleLimit / 3.6)
+        CreateThread(function()
+            if GLOBAL_LIMIT and not vehicleLimit then
+                while cache.vehicle == value do
+                    Wait(0)
+                    SetEntityMaxSpeed(value, GLOBAL_LIMIT / 3.6)
+                end
+            elseif vehicleLimit then
+                while cache.vehicle == value do
+                    Wait(0)
+                    SetEntityMaxSpeed(value, vehicleLimit / 3.6)
+                end
+            end
+        end)
     end)
 end)
